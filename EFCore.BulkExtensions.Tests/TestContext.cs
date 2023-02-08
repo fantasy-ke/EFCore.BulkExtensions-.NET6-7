@@ -17,59 +17,59 @@ namespace EFCore.BulkExtensions.Tests;
 
 public class TestContext : DbContext
 {
-    public DbSet<Item> Items { get; set; } = null!;
-    public DbSet<ItemHistory> ItemHistories { get; set; } = null!;
+    public DbSet<Item> Item { get; set; } = null!;
+    //public DbSet<ItemHistory> ItemHistories { get; set; } = null!;
 
-    public DbSet<UserRole> UserRoles { get; set; } = null!;
+    //public DbSet<UserRole> UserRoles { get; set; } = null!;
 
-    public DbSet<Document> Documents { get; set; } = null!;
-    public DbSet<Letter> Letters { get; set; } = null!;
+    public DbSet<Documents> DOCUMENTS { get; set; } = null!;
+    //public DbSet<Letter> Letters { get; set; } = null!;
 
-    public DbSet<Storage> Storages { get; set; } = null!;
+    //public DbSet<Storage> Storages { get; set; } = null!;
 
-    public DbSet<File> Files { get; set; } = null!;
+    //public DbSet<File> Files { get; set; } = null!;
 
-    public DbSet<Box> Boxes { get; set; } = null!;
-    public DbSet<Person> Persons { get; set; } = null!;
-    public DbSet<Student> Students { get; set; } = null!;
-    public DbSet<Teacher> Teachers { get; set; } = null!;
-    public DbSet<Entry> Entries { get; set; } = null!;
-    public DbSet<EntryArchive> EntryArchives { get; set; } = null!;
-    public DbSet<EntryPrep> EntryPreps { get; set; } = null!;
-    public DbSet<Modul> Moduls { get; set; } = null!;
-    public DbSet<Info> Infos { get; set; } = null!;
-    public DbSet<ChangeLog> ChangeLogs { get; set; } = null!;
-    public DbSet<Tracker> Trackers { get; set; } = null!;
-    public DbSet<ItemLink> ItemLinks { get; set; } = null!;
-    public DbSet<Address> Addresses { get; set; } = null!;
-    public DbSet<Category> Categories { get; set; } = null!;
+    //public DbSet<Box> Boxes { get; set; } = null!;
+    //public DbSet<Person> Persons { get; set; } = null!;
+    //public DbSet<Student> Students { get; set; } = null!;
+    //public DbSet<Teacher> Teachers { get; set; } = null!;
+    //public DbSet<Entry> Entries { get; set; } = null!;
+    //public DbSet<EntryArchive> EntryArchives { get; set; } = null!;
+    //public DbSet<EntryPrep> EntryPreps { get; set; } = null!;
+    //public DbSet<Modul> Moduls { get; set; } = null!;
+    //public DbSet<Info> Infos { get; set; } = null!;
+    //public DbSet<ChangeLog> ChangeLogs { get; set; } = null!;
+    //public DbSet<Tracker> Trackers { get; set; } = null!;
+    //public DbSet<ItemLink> ItemLinks { get; set; } = null!;
+    //public DbSet<Address> Addresses { get; set; } = null!;
+    //public DbSet<Category> Categories { get; set; } = null!;
 
-    public DbSet<Parent> Parents { get; set; } = null!;
-    public DbSet<ParentDetail> ParentDetails { get; set; } = null!;
-    public DbSet<Child> Children { get; set; } = null!;
+    //public DbSet<Parent> Parents { get; set; } = null!;
+    //public DbSet<ParentDetail> ParentDetails { get; set; } = null!;
+    //public DbSet<Child> Children { get; set; } = null!;
 
-    public DbSet<Animal> Animals { get; set; } = null!;
+    //public DbSet<Animal> Animals { get; set; } = null!;
 
-    public DbSet<Setting> Settings { get; set; } = null!;
+    //public DbSet<Setting> Settings { get; set; } = null!;
 
-    public DbSet<LogPersonReport> LogPersonReports { get; set; } = null!;
+    //public DbSet<LogPersonReport> LogPersonReports { get; set; } = null!;
 
-    public DbSet<AtypicalRowVersionEntity> AtypicalRowVersionEntities { get; set; } = null!;
+    //public DbSet<AtypicalRowVersionEntity> AtypicalRowVersionEntities { get; set; } = null!;
 
-    public DbSet<AtypicalRowVersionConverterEntity> AtypicalRowVersionConverterEntities { get; set; } = null!;
+    //public DbSet<AtypicalRowVersionConverterEntity> AtypicalRowVersionConverterEntities { get; set; } = null!;
 
-    public DbSet<Event> Events { get; set; } = null!;
+    //public DbSet<Event> Events { get; set; } = null!;
 
-    public DbSet<Archive> Archives { get; set; } = null!;
+    //public DbSet<Archive> Archives { get; set; } = null!;
 
-    public DbSet<Counter> Counters { get; set; } = null!;
+    //public DbSet<Counter> Counters { get; set; } = null!;
 
-    public DbSet<Source> Sources { get; set; } = null!;
+    //public DbSet<Source> Sources { get; set; } = null!;
 
-    public DbSet<Department> Departments { get; set; } = null!;
-    public DbSet<Division> Divisions { get; set; } = null!;
-    public DbSet<PrivateKey> PrivateKeys { get; set; } = null!;
-    public DbSet<Wall> Walls { get; set; } = null!;
+    //public DbSet<Department> Departments { get; set; } = null!;
+    //public DbSet<Division> Divisions { get; set; } = null!;
+    //public DbSet<PrivateKey> PrivateKeys { get; set; } = null!;
+    //public DbSet<Wall> Walls { get; set; } = null!;
 
     public TestContext(DbContextOptions options) : base(options)
     {
@@ -84,106 +84,106 @@ public class TestContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.RemovePluralizingTableNameConvention();
+        //modelBuilder.RemovePluralizingTableNameConvention();
 
-        modelBuilder.Entity<UserRole>().HasKey(a => new { a.UserId, a.RoleId });
+        //modelBuilder.Entity<UserRole>().HasKey(a => new { a.UserId, a.RoleId });
 
-        modelBuilder.Entity<Info>(e => { e.Property(p => p.ConvertedTime).HasConversion((value) => value.AddDays(1), (value) => value.AddDays(-1)); });
-        modelBuilder.Entity<Info>().Property(p => p.InfoType).HasConversion(new EnumToStringConverter<InfoType>());
-        modelBuilder.Entity<Info>().Property(p => p.DateTimeOff).HasConversion(new DateTimeOffsetToBinaryConverter());
+        //modelBuilder.Entity<Info>(e => { e.Property(p => p.ConvertedTime).HasConversion((value) => value.AddDays(1), (value) => value.AddDays(-1)); });
+        //modelBuilder.Entity<Info>().Property(p => p.InfoType).HasConversion(new EnumToStringConverter<InfoType>());
+        //modelBuilder.Entity<Info>().Property(p => p.DateTimeOff).HasConversion(new DateTimeOffsetToBinaryConverter());
 
-        modelBuilder.Entity<Wall>().HasKey(x => x.Id);
-        modelBuilder.Entity<Wall>().Property(x => x.Id).ValueGeneratedNever();
-        modelBuilder.Entity<Wall>().Property(x => x.WallTypeValue).HasConversion(new EnumToStringConverter<WallType>());
+        //modelBuilder.Entity<Wall>().HasKey(x => x.Id);
+        //modelBuilder.Entity<Wall>().Property(x => x.Id).ValueGeneratedNever();
+        //modelBuilder.Entity<Wall>().Property(x => x.WallTypeValue).HasConversion(new EnumToStringConverter<WallType>());
+
+        //modelBuilder.Entity<Info>(e => { e.Property("LogData"); });
+        //modelBuilder.Entity<Info>(e => { e.Property("TimeCreated"); });
+        //modelBuilder.Entity<Info>(e => { e.Property("Remark"); });
+
+        //modelBuilder.Entity<ChangeLog>().OwnsOne(a => a.Audit,
+        //    b => b.Property(p => p.InfoType).HasConversion(new EnumToStringConverter<InfoType>()));
+
+        //modelBuilder.Entity<Person>().HasIndex(a => a.Name)
+        //    .IsUnique(); // In SQLite UpdateByColumn(nonPK) requires it has UniqueIndex
+
+        modelBuilder.Entity<Documents>().HasKey(c=>c.DOCUMENTID);
+        modelBuilder.Entity<Documents>().Property(p => p.ISACTIVE).HasDefaultValue(true);
+        modelBuilder.Entity<Documents>().Property(p => p.TAG).HasDefaultValue("DefaultData");
+
+        //modelBuilder.Entity<Log>().ToTable(nameof(Log));
+        //modelBuilder.Entity<LogPersonReport>().ToTable(nameof(LogPersonReport));
+
+        //if (Database.IsSqlServer())
+        //{
+        //    modelBuilder.Entity<Document>().Property(p => p.DocumentId).HasDefaultValueSql("NEWID()");
+        //    modelBuilder.Entity<Document>().Property(p => p.ContentLength).HasComputedColumnSql($"(CONVERT([int], len([{nameof(Document.Content)}])))");
+
+        //    modelBuilder.Entity<Storage>().ToTable(nameof(Storage), b => b.IsTemporal());
+
+        //    modelBuilder.Entity<UdttIntInt>(entity => { entity.HasNoKey(); });
+
+        //    modelBuilder.Entity<Address>().Property(p => p.LocationGeometry).HasColumnType("geometry");
+        //    modelBuilder.Entity<Category>().Property(p => p.HierarchyDescription).HasColumnType("hierarchyid");
+
+        //    modelBuilder.Entity<Division>().Property(p => p.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
+        //    modelBuilder.Entity<Department>().Property(p => p.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
+
+        //    //modelBuilder.Entity<SequentialInfo>().HasKey(a => a.Id);
+        //    //SqlServerPropertyBuilderExtensions.UseHiLo(modelBuilder.Entity<SequentialInfo>().Property(a => a.Id), name: "SequenceData", schema: "dbo");
+        //    //modelBuilder.HasSequence<int>("SequenceData", "dbo").StartsAt(10).IncrementsBy(5);
+
+        //    modelBuilder.Entity<Tracker>().OwnsOne(t => t.Location);
+        //}
+        //else
+        //{
+        //    modelBuilder.Entity<Tracker>().OwnsOne(t => t.Location).Ignore(p => p.Location); // Point only on SqlServer
+        //}
+
+        //if (Database.IsSqlite() || Database.IsNpgsql() || Database.IsMySql())
+        //{
+        //    modelBuilder.Entity<Address>().Ignore(p => p.LocationGeography);
+        //    modelBuilder.Entity<Address>().Ignore(p => p.LocationGeometry);
+        //    modelBuilder.Entity<Category>().Ignore(p => p.HierarchyDescription);
+
+        //    modelBuilder.Entity<Event>().Ignore(p => p.TimeCreated);
+        //}
+
+        //if (Database.IsSqlite())
+        //{
+        //   // modelBuilder.Entity<File>().Property(p => p.VersionChange).ValueGeneratedOnAddOrUpdate().IsConcurrencyToken().HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        //    modelBuilder.Entity<ItemHistory>().ToTable(nameof(ItemHistory));
+        //}
+
+        //if (Database.IsNpgsql())
+        //{
+        //    modelBuilder.Entity<Event>().Property(p => p.TimeCreated).HasColumnType("timestamp"); // with annotation defined as "datetime2(3)" so here corrected for PG ("timestamp" in short for "timestamp without time zone")
+
+        //    modelBuilder.Entity<Box>().Property(p => p.ElementContent).HasColumnType("jsonb"); // with annotation not mapped since not used for others DBs
+        //    modelBuilder.Entity<Box>().Property(p => p.DocumentContent).HasColumnType("jsonb"); // with annotation not mapped since not used for others DBs
+        //}
+
+        ////modelBuilder.Entity<Modul>(buildAction => { buildAction.HasNoKey(); });
+        //modelBuilder.Entity<Modul>().Property(et => et.Code).ValueGeneratedNever();
+
+        //modelBuilder.Entity<Setting>().Property(e => e.Settings).HasConversion<string>();
+
+        //modelBuilder.Entity<AtypicalRowVersionEntity>().HasKey(e => e.Id);
+        //modelBuilder.Entity<AtypicalRowVersionEntity>().Property(e => e.RowVersion).HasDefaultValue(0).IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().Metadata.SetBeforeSaveBehavior(PropertySaveBehavior.Save);
+        //modelBuilder.Entity<AtypicalRowVersionEntity>().Property(e => e.SyncDevice).IsRequired(true).IsConcurrencyToken().HasDefaultValue("");
+
+        //if (!Database.IsNpgsql() && !Database.IsMySql())
+        //{
+        //    modelBuilder.Entity<AtypicalRowVersionConverterEntity>().Property(e => e.RowVersionConverted).HasConversion(new NumberToBytesConverter<long>()).HasColumnType("timestamp").IsRowVersion().IsConcurrencyToken();
+        //}
+
+        //modelBuilder.Entity<Parent>().Property(parent => parent.PhoneNumber)
+        //    .HasColumnType("varchar(12)").HasMaxLength(12).HasField("_phoneNumber").IsRequired();
         
-        modelBuilder.Entity<Info>(e => { e.Property("LogData"); });
-        modelBuilder.Entity<Info>(e => { e.Property("TimeCreated"); });
-        modelBuilder.Entity<Info>(e => { e.Property("Remark"); });
-
-        modelBuilder.Entity<ChangeLog>().OwnsOne(a => a.Audit,
-            b => b.Property(p => p.InfoType).HasConversion(new EnumToStringConverter<InfoType>()));
-
-        modelBuilder.Entity<Person>().HasIndex(a => a.Name)
-            .IsUnique(); // In SQLite UpdateByColumn(nonPK) requires it has UniqueIndex
-
-
-        modelBuilder.Entity<Document>().Property(p => p.IsActive).HasDefaultValue(true);
-        modelBuilder.Entity<Document>().Property(p => p.Tag).HasDefaultValue("DefaultData");
-
-        modelBuilder.Entity<Log>().ToTable(nameof(Log));
-        modelBuilder.Entity<LogPersonReport>().ToTable(nameof(LogPersonReport));
-
-        if (Database.IsSqlServer())
-        {
-            modelBuilder.Entity<Document>().Property(p => p.DocumentId).HasDefaultValueSql("NEWID()");
-            modelBuilder.Entity<Document>().Property(p => p.ContentLength).HasComputedColumnSql($"(CONVERT([int], len([{nameof(Document.Content)}])))");
-
-            modelBuilder.Entity<Storage>().ToTable(nameof(Storage), b => b.IsTemporal());
-
-            modelBuilder.Entity<UdttIntInt>(entity => { entity.HasNoKey(); });
-
-            modelBuilder.Entity<Address>().Property(p => p.LocationGeometry).HasColumnType("geometry");
-            modelBuilder.Entity<Category>().Property(p => p.HierarchyDescription).HasColumnType("hierarchyid");
-
-            modelBuilder.Entity<Division>().Property(p => p.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
-            modelBuilder.Entity<Department>().Property(p => p.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
-
-            //modelBuilder.Entity<SequentialInfo>().HasKey(a => a.Id);
-            //SqlServerPropertyBuilderExtensions.UseHiLo(modelBuilder.Entity<SequentialInfo>().Property(a => a.Id), name: "SequenceData", schema: "dbo");
-            //modelBuilder.HasSequence<int>("SequenceData", "dbo").StartsAt(10).IncrementsBy(5);
-
-            modelBuilder.Entity<Tracker>().OwnsOne(t => t.Location);
-        }
-        else
-        {
-            modelBuilder.Entity<Tracker>().OwnsOne(t => t.Location).Ignore(p => p.Location); // Point only on SqlServer
-        }
-
-        if (Database.IsSqlite() || Database.IsNpgsql() || Database.IsMySql())
-        {
-            modelBuilder.Entity<Address>().Ignore(p => p.LocationGeography);
-            modelBuilder.Entity<Address>().Ignore(p => p.LocationGeometry);
-            modelBuilder.Entity<Category>().Ignore(p => p.HierarchyDescription);
-
-            modelBuilder.Entity<Event>().Ignore(p => p.TimeCreated);
-        }
-
-        if (Database.IsSqlite())
-        {
-            modelBuilder.Entity<File>().Property(p => p.VersionChange).ValueGeneratedOnAddOrUpdate().IsConcurrencyToken().HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            modelBuilder.Entity<ItemHistory>().ToTable(nameof(ItemHistory));
-        }
-
-        if (Database.IsNpgsql())
-        {
-            modelBuilder.Entity<Event>().Property(p => p.TimeCreated).HasColumnType("timestamp"); // with annotation defined as "datetime2(3)" so here corrected for PG ("timestamp" in short for "timestamp without time zone")
-
-            modelBuilder.Entity<Box>().Property(p => p.ElementContent).HasColumnType("jsonb"); // with annotation not mapped since not used for others DBs
-            modelBuilder.Entity<Box>().Property(p => p.DocumentContent).HasColumnType("jsonb"); // with annotation not mapped since not used for others DBs
-        }
-
-        //modelBuilder.Entity<Modul>(buildAction => { buildAction.HasNoKey(); });
-        modelBuilder.Entity<Modul>().Property(et => et.Code).ValueGeneratedNever();
-
-        modelBuilder.Entity<Setting>().Property(e => e.Settings).HasConversion<string>();
-
-        modelBuilder.Entity<AtypicalRowVersionEntity>().HasKey(e => e.Id);
-        modelBuilder.Entity<AtypicalRowVersionEntity>().Property(e => e.RowVersion).HasDefaultValue(0).IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().Metadata.SetBeforeSaveBehavior(PropertySaveBehavior.Save);
-        modelBuilder.Entity<AtypicalRowVersionEntity>().Property(e => e.SyncDevice).IsRequired(true).IsConcurrencyToken().HasDefaultValue("");
-
-        if (!Database.IsNpgsql() && !Database.IsMySql())
-        {
-            modelBuilder.Entity<AtypicalRowVersionConverterEntity>().Property(e => e.RowVersionConverted).HasConversion(new NumberToBytesConverter<long>()).HasColumnType("timestamp").IsRowVersion().IsConcurrencyToken();
-        }
-
-        modelBuilder.Entity<Parent>().Property(parent => parent.PhoneNumber)
-            .HasColumnType("varchar(12)").HasMaxLength(12).HasField("_phoneNumber").IsRequired();
-        
-        modelBuilder.Entity<PrivateKey>(c =>
-        {
-            c.HasKey("Id");
-        });
+        //modelBuilder.Entity<PrivateKey>(c =>
+        //{
+        //    c.HasKey("Id");
+        //});
 
         //modelBuilder.Entity<Person>().HasDiscriminator<string>("Discriminator").HasValue<Student>("Student").HasValue<Teacher>("Teacher"); // name of classes are default values
 
@@ -213,6 +213,7 @@ public static class ContextUtil
                 DbServerType.SQLite => new SqlAdapters.SQLite.SqlLiteDbServer(),
                 DbServerType.PostgreSQL => new SqlAdapters.PostgreSql.PostgreSqlDbServer(),
                 DbServerType.MySQL => new SqlAdapters.MySql.MySqlDbServer(),
+                DbServerType.Oracle => new SqlAdapters.Oracle.OracleDbServer(),
                 _ => throw new NotImplementedException(),
             };
         }
@@ -264,6 +265,11 @@ public static class ContextUtil
             string connectionString = GetMySqlConnectionString(databaseName);
             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }
+        else if (DbServer == DbServerType.Oracle)
+        {
+            string connectionString = GetOracleConnectionString(databaseName);
+            optionsBuilder.UseOracle(connectionString);
+        }
         else
         {
             throw new NotSupportedException($"Database {dbServerType} is not supported. Only SQL Server and SQLite are Currently supported.");
@@ -304,6 +310,13 @@ public static class ContextUtil
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         return GetConfiguration().GetConnectionString("PostgreSql").Replace("{databaseName}", databaseName);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+    }
+
+    public static string GetOracleConnectionString(string databaseName)
+    {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+        return GetConfiguration().GetConnectionString("Oracle").Replace("{databaseName}", databaseName);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 
@@ -362,7 +375,6 @@ public class Item
 
     public ICollection<ItemHistory> ItemHistories { get; set; } = null!;
 
-    public ItemCategory? Category { get; set; }
 }
 
 // ItemHistory is used to test bulk Ops to multiple tables(Item and ItemHistory), to test Guid as PK and to test other Schema(his)
@@ -487,24 +499,24 @@ public class Teacher : Person
 }
 
 // For testing Computed columns Default values
-public class Document
+public class Documents
 {
     //[DefaultValueSql("NEWID()")] // no native [DefaultValueSql] annotation so this is configured via FluentAPI in modelBuilder
-    public Guid DocumentId { get; set; }
+    public Guid DOCUMENTID { get; set; }
 
     //[DefaultValue(true)] // EF doesn't use DefaultValue attribute, not annotation, so this is configured via FluentAPI as well
-    public bool? IsActive { get; set; }
+    public bool? ISACTIVE { get; set; }
 
 
     //HasDefaultValueSql
     [Required]
-    public string Content { get; set; } = null!;
+    public string CONTENT { get; set; } = null!;
 
     //HasComputedColumnSql
-    public string? Tag { get; set; }
+    public string? TAG { get; set; }
 
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)] // Computed columns also have to be configured with FluentAPI
-    public int ContentLength { get; set; }
+    public int CONTENTLENGTH { get; set; }
 }
 
 // For testing parameterless constructor
@@ -550,8 +562,8 @@ public class File
 
     public byte[]? DataBytes { get; set; }
 
-    [Timestamp]
-    public byte[] VersionChange { get; set; } = null!;
+    //[Timestamp]
+    //public byte[] VersionChange { get; set; } = null!;
     //public ulong RowVersion { get; set; }
 }
 
@@ -775,8 +787,8 @@ public class Event // CustomPrecision DateTime Test (SqlServer only)
 
 public class Archive
 {
-    public byte[] ArchiveId { get; set; } = null!;
-    public string Description { get; set; } = null!;
+    //public byte[] ArchiveId { get; set; } = null!;
+    //public string Description { get; set; } = null!;
 }
 
 public class Counter

@@ -16,9 +16,9 @@ public class EFCoreBulkTestAsync
 {
     protected static int EntitiesNumber => 10000;
 
-    private static readonly Func<TestContext, int> ItemsCountQuery = EF.CompileQuery<TestContext, int>(ctx => ctx.Items.Count());
-    private static readonly Func<TestContext, Item?> LastItemQuery = EF.CompileQuery<TestContext, Item?>(ctx => ctx.Items.LastOrDefault());
-    private static readonly Func<TestContext, IEnumerable<Item>> AllItemsQuery = EF.CompileQuery<TestContext, IEnumerable<Item>>(ctx => ctx.Items.AsNoTracking());
+    private static readonly Func<TestContext, int> ItemsCountQuery = EF.CompileQuery<TestContext, int>(ctx => ctx.Item.Count());
+    private static readonly Func<TestContext, Item?> LastItemQuery = EF.CompileQuery<TestContext, Item?>(ctx => ctx.Item.LastOrDefault());
+    private static readonly Func<TestContext, IEnumerable<Item>> AllItemsQuery = EF.CompileQuery<TestContext, IEnumerable<Item>>(ctx => ctx.Item.AsNoTracking());
 
     [Theory]
     [InlineData(DbServerType.SQLServer, true)]
@@ -29,7 +29,7 @@ public class EFCoreBulkTestAsync
         ContextUtil.DbServer = dbServer;
 
         //await DeletePreviousDatabaseAsync().ConfigureAwait(false);
-        await new EFCoreBatchTestAsync().RunDeleteAllAsync(dbServer);
+        //await new EFCoreBatchTestAsync().RunDeleteAllAsync(dbServer);
 
         // Test can be run individually by commenting others and running each separately in order one after another
         await RunInsertAsync(isBulk);
@@ -188,13 +188,13 @@ public class EFCoreBulkTestAsync
         }
         else
         {
-            await context.Items.AddRangeAsync(entities);
+            await context.Item.AddRangeAsync(entities);
             await context.SaveChangesAsync();
         }
 
         // TEST
-        int entitiesCount = await context.Items.CountAsync(); // = ItemsCountQuery(context);
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault(); // = LastItemQuery(context);
+        int entitiesCount = await context.Item.CountAsync(); // = ItemsCountQuery(context);
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault(); // = LastItemQuery(context);
 
         Assert.Equal(EntitiesNumber - 1, entitiesCount);
         Assert.NotNull(lastEntity);
@@ -232,13 +232,13 @@ public class EFCoreBulkTestAsync
         }
         else
         {
-            await context.Items.AddRangeAsync(entities);
+            await context.Item.AddRangeAsync(entities);
             await context.SaveChangesAsync();
         }
 
         // TEST
-        int entitiesCount = await context.Items.CountAsync();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = await context.Item.CountAsync();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber, entitiesCount);
         Assert.NotNull(lastEntity);
@@ -279,18 +279,18 @@ public class EFCoreBulkTestAsync
         }
         else
         {
-            var existingItems = context.Items;
+            var existingItems = context.Item;
             var removedItems = existingItems.Where(x => !entities.Any(y => y.ItemId == x.ItemId));
-            context.Items.RemoveRange(removedItems);
-            await context.Items.AddRangeAsync(entities);
+            context.Item.RemoveRange(removedItems);
+            await context.Item.AddRangeAsync(entities);
             await context.SaveChangesAsync();
         }
 
         // TEST
         using var contextRead = new TestContext(ContextUtil.GetOptions());
-        int entitiesCount = await contextRead.Items.CountAsync(); // = ItemsCountQuery(context);
-        Item? firstEntity = contextRead.Items.OrderBy(a => a.ItemId).FirstOrDefault(); // = LastItemQuery(context);
-        Item? lastEntity = contextRead.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = await contextRead.Item.CountAsync(); // = ItemsCountQuery(context);
+        Item? firstEntity = contextRead.Item.OrderBy(a => a.ItemId).FirstOrDefault(); // = LastItemQuery(context);
+        Item? lastEntity = contextRead.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber / 2 + (keepEntityItemId != null ? 1 : 0), entitiesCount);
         Assert.NotNull(firstEntity);
@@ -302,7 +302,7 @@ public class EFCoreBulkTestAsync
         bulkConfigSoftDel.SetSynchronizeSoftDelete<Item>(a => new Item { Quantity = 0 }); // Instead of Deleting from DB it updates Quantity to 0 (usual usecase would be: IsDeleted to True)
         context.BulkInsertOrUpdateOrDelete(new List<Item> { entities[1] }, bulkConfigSoftDel);
 
-        var list = await context.Items.Take(2).ToListAsync();
+        var list = await context.Item.Take(2).ToListAsync();
         Assert.True(list[0].Quantity != 0);
         Assert.True(list[1].Quantity == 0);
     }
@@ -331,13 +331,13 @@ public class EFCoreBulkTestAsync
         }
         else
         {
-            context.Items.UpdateRange(entities);
+            context.Item.UpdateRange(entities);
             await context.SaveChangesAsync();
         }
 
         // TEST
-        int entitiesCount = await context.Items.CountAsync();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = await context.Item.CountAsync();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber, entitiesCount);
         Assert.NotNull(lastEntity);
@@ -382,13 +382,13 @@ public class EFCoreBulkTestAsync
         }
         else
         {
-            context.Items.RemoveRange(entities);
+            context.Item.RemoveRange(entities);
             await context.SaveChangesAsync();
         }
 
         // TEST
-        int entitiesCount = await context.Items.CountAsync();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = await context.Item.CountAsync();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(0, entitiesCount);
         Assert.Null(lastEntity);

@@ -11,7 +11,7 @@ public class BatchUtilTests
         ContextUtil.DbServer = DbServerType.SQLite;
 
         using var context = new TestContext(ContextUtil.GetOptions());
-        (string sql, string tableAlias, string tableAliasSufixAs, _, _, _) = BulkExtensions.BatchUtil.GetBatchSql(context.Items, context, true);
+        (string sql, string tableAlias, string tableAliasSufixAs, _, _, _) = BulkExtensions.BatchUtil.GetBatchSql(context.Item, context, true);
 
         Assert.Equal("\"Item\"", tableAlias);
         Assert.Equal(" AS \"i\"", tableAliasSufixAs);

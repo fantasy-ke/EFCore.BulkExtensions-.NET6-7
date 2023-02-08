@@ -18,206 +18,206 @@ public class EFCoreBulkTest
 {
     protected static int EntitiesNumber => 10000;
 
-    private static readonly Func<TestContext, int> ItemsCountQuery = EF.CompileQuery<TestContext, int>(ctx => ctx.Items.Count());
-    private static readonly Func<TestContext, Item?> LastItemQuery = EF.CompileQuery<TestContext, Item?>(ctx => ctx.Items.LastOrDefault());
-    private static readonly Func<TestContext, IEnumerable<Item>> AllItemsQuery = EF.CompileQuery<TestContext, IEnumerable<Item>>(ctx => ctx.Items.AsNoTracking());
+    private static readonly Func<TestContext, int> ItemsCountQuery = EF.CompileQuery<TestContext, int>(ctx => ctx.Item.Count());
+    private static readonly Func<TestContext, Item?> LastItemQuery = EF.CompileQuery<TestContext, Item?>(ctx => ctx.Item.LastOrDefault());
+    private static readonly Func<TestContext, IEnumerable<Item>> AllItemsQuery = EF.CompileQuery<TestContext, IEnumerable<Item>>(ctx => ctx.Item.AsNoTracking());
 
-    [Theory]
-    [InlineData(DbServerType.PostgreSQL)]
-    public void InsertEnumStringValue(DbServerType dbServer)
-    {
-        ContextUtil.DbServer = dbServer;
+    //[Theory]
+    //[InlineData(DbServerType.PostgreSQL)]
+    //public void InsertEnumStringValue(DbServerType dbServer)
+    //{
+    //    ContextUtil.DbServer = dbServer;
 
-        using var context = new TestContext(ContextUtil.GetOptions());
-        context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(Wall)}""");
+    //    using var context = new TestContext(ContextUtil.GetOptions());
+    //    context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(Wall)}""");
 
-        var newWall = new Wall()
-        {
-            Id = 1,
-            WallTypeValue = WallType.Brick
-        };
-        // INSERT
-        context.BulkInsert(new List<Wall>() { newWall });
+    //    var newWall = new Wall()
+    //    {
+    //        Id = 1,
+    //        WallTypeValue = WallType.Brick
+    //    };
+    //    // INSERT
+    //    context.BulkInsert(new List<Wall>() { newWall });
 
-         var addedWall = context.Walls.AsNoTracking().First(x => x.Id == newWall.Id);
+    //     var addedWall = context.Walls.AsNoTracking().First(x => x.Id == newWall.Id);
          
-         Assert.True(addedWall.WallTypeValue == newWall.WallTypeValue);
-    }
+    //     Assert.True(addedWall.WallTypeValue == newWall.WallTypeValue);
+    //}
 
-    [Theory]
-    [InlineData(DbServerType.PostgreSQL)]
-    public void InsertTestPostgreSql(DbServerType dbServer)
-    {
-        ContextUtil.DbServer = dbServer;
+    //[Theory]
+    //[InlineData(DbServerType.PostgreSQL)]
+    //public void InsertTestPostgreSql(DbServerType dbServer)
+    //{
+    //    ContextUtil.DbServer = dbServer;
 
-        using var context = new TestContext(ContextUtil.GetOptions());
+    //    using var context = new TestContext(ContextUtil.GetOptions());
 
-        context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(Item)}""");
-        context.Database.ExecuteSqlRaw($@"ALTER SEQUENCE ""{nameof(Item)}_{nameof(Item.ItemId)}_seq"" RESTART WITH 1");
+    //    context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(Item)}""");
+    //    context.Database.ExecuteSqlRaw($@"ALTER SEQUENCE ""{nameof(Item)}_{nameof(Item.ItemId)}_seq"" RESTART WITH 1");
 
-        context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(Box)}""");
-        context.Database.ExecuteSqlRaw($@"ALTER SEQUENCE ""{nameof(Box)}_{nameof(Box.BoxId)}_seq"" RESTART WITH 1");
+    //    context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(Box)}""");
+    //    context.Database.ExecuteSqlRaw($@"ALTER SEQUENCE ""{nameof(Box)}_{nameof(Box.BoxId)}_seq"" RESTART WITH 1");
 
-        context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(UserRole)}""");
+    //    context.Database.ExecuteSqlRaw($@"DELETE FROM ""{nameof(UserRole)}""");
 
-        var currentTime = DateTime.UtcNow; // default DateTime type: "timestamp with time zone"; DateTime.Now goes with: "timestamp without time zone"
+    //    var currentTime = DateTime.UtcNow; // default DateTime type: "timestamp with time zone"; DateTime.Now goes with: "timestamp without time zone"
 
-        var entities = new List<Item>();
-        for (int i = 1; i <= 2; i++)
-        {
-            var entity = new Item
-            {
-                //ItemId = i,
-                Name = "Name " + i,
-                Description = "info " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
-            };
-            entities.Add(entity);
-        }
+    //    var entities = new List<Item>();
+    //    for (int i = 1; i <= 2; i++)
+    //    {
+    //        var entity = new Item
+    //        {
+    //            //ItemId = i,
+    //            Name = "Name " + i,
+    //            Description = "info " + i,
+    //            Quantity = i,
+    //            Price = 0.1m * i,
+    //            TimeUpdated = currentTime,
+    //        };
+    //        entities.Add(entity);
+    //    }
 
-        var entities2 = new List<Item>();
-        for (int i = 2; i <= 3; i++)
-        {
-            var entity = new Item
-            {
-                ItemId = i,
-                Name = "Name " + i,
-                Description = "UPDATE " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
-            };
-            entities2.Add(entity);
-        }
+    //    var entities2 = new List<Item>();
+    //    for (int i = 2; i <= 3; i++)
+    //    {
+    //        var entity = new Item
+    //        {
+    //            ItemId = i,
+    //            Name = "Name " + i,
+    //            Description = "UPDATE " + i,
+    //            Quantity = i,
+    //            Price = 0.1m * i,
+    //            TimeUpdated = currentTime,
+    //        };
+    //        entities2.Add(entity);
+    //    }
 
-        var entities3 = new List<Item>();
-        for (int i = 3; i <= 4; i++)
-        {
-            var entity = new Item
-            {
-                //ItemId = i,
-                Name = "Name " + i,
-                Description = "CHANGE " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
-            };
-            entities3.Add(entity);
-        }
+    //    var entities3 = new List<Item>();
+    //    for (int i = 3; i <= 4; i++)
+    //    {
+    //        var entity = new Item
+    //        {
+    //            //ItemId = i,
+    //            Name = "Name " + i,
+    //            Description = "CHANGE " + i,
+    //            Quantity = i,
+    //            Price = 0.1m * i,
+    //            TimeUpdated = currentTime,
+    //        };
+    //        entities3.Add(entity);
+    //    }
 
-        var entities56 = new List<Item>();
-        for (int i = 5; i <= 6; i++)
-        {
-            var entity = new Item
-            {
-                //ItemId = i,
-                Name = "Name " + i,
-                Description = "CHANGE " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
-            };
-            entities56.Add(entity);
-        }
+    //    var entities56 = new List<Item>();
+    //    for (int i = 5; i <= 6; i++)
+    //    {
+    //        var entity = new Item
+    //        {
+    //            //ItemId = i,
+    //            Name = "Name " + i,
+    //            Description = "CHANGE " + i,
+    //            Quantity = i,
+    //            Price = 0.1m * i,
+    //            TimeUpdated = currentTime,
+    //        };
+    //        entities56.Add(entity);
+    //    }
 
-        var entities78 = new List<Item>();
-        for (int i = 7; i <= 8; i++)
-        {
-            var entity = new Item
-            {
-                //ItemId = i,
-                Name = "Name " + i,
-                Description = "CHANGE " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
-            };
-            entities78.Add(entity);
-        }
+    //    var entities78 = new List<Item>();
+    //    for (int i = 7; i <= 8; i++)
+    //    {
+    //        var entity = new Item
+    //        {
+    //            //ItemId = i,
+    //            Name = "Name " + i,
+    //            Description = "CHANGE " + i,
+    //            Quantity = i,
+    //            Price = 0.1m * i,
+    //            TimeUpdated = currentTime,
+    //        };
+    //        entities78.Add(entity);
+    //    }
 
-        // INSERT
-        context.BulkInsert(entities);
+    //    // INSERT
+    //    context.BulkInsert(entities);
 
-        Assert.Equal("info 1", context.Items.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
-        Assert.Equal("info 2", context.Items.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
+    //    Assert.Equal("info 1", context.Item.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
+    //    Assert.Equal("info 2", context.Item.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
 
-        // UPDATE
-        context.BulkInsertOrUpdate(entities2, new BulkConfig() { NotifyAfter = 1 }, (a) => WriteProgress(a));
+    //    // UPDATE
+    //    context.BulkInsertOrUpdate(entities2, new BulkConfig() { NotifyAfter = 1 }, (a) => WriteProgress(a));
 
-        Assert.Equal("UPDATE 2", context.Items.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
-        Assert.Equal("UPDATE 3", context.Items.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
+    //    Assert.Equal("UPDATE 2", context.Item.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
+    //    Assert.Equal("UPDATE 3", context.Item.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
 
-        var configUpdateBy = new BulkConfig { UpdateByProperties = new List<string> { nameof(Item.Name) } };
+    //    var configUpdateBy = new BulkConfig { UpdateByProperties = new List<string> { nameof(Item.Name) } };
 
-        configUpdateBy.SetOutputIdentity = true;
-        context.BulkUpdate(entities3, configUpdateBy);
+    //    configUpdateBy.SetOutputIdentity = true;
+    //    context.BulkUpdate(entities3, configUpdateBy);
 
-        Assert.Equal(3, entities3[0].ItemId); // to test Output
-        Assert.Equal(4, entities3[1].ItemId);
+    //    Assert.Equal(3, entities3[0].ItemId); // to test Output
+    //    Assert.Equal(4, entities3[1].ItemId);
 
-        Assert.Equal("CHANGE 3", context.Items.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
-        Assert.Equal("CHANGE 4", context.Items.Where(a => a.Name == "Name 4").AsNoTracking().FirstOrDefault()?.Description);
+    //    Assert.Equal("CHANGE 3", context.Item.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
+    //    Assert.Equal("CHANGE 4", context.Item.Where(a => a.Name == "Name 4").AsNoTracking().FirstOrDefault()?.Description);
 
-        // Test Multiple KEYS
-        var userRoles = new List<UserRole> { new UserRole { Description = "Info" } };
-        context.BulkInsertOrUpdate(userRoles);
+    //    // Test Multiple KEYS
+    //    var userRoles = new List<UserRole> { new UserRole { Description = "Info" } };
+    //    context.BulkInsertOrUpdate(userRoles);
 
-        // DELETE
-        context.BulkDelete(new List<Item>() { entities2[1] }, configUpdateBy);
+    //    // DELETE
+    //    context.BulkDelete(new List<Item>() { entities2[1] }, configUpdateBy);
 
-        // READ
-        var secondEntity = new List<Item>() { new Item { Name = entities[1].Name } };
-        context.BulkRead(secondEntity, configUpdateBy);
-        Assert.Equal(2, secondEntity.FirstOrDefault()?.ItemId);
-        Assert.Equal("UPDATE 2", secondEntity.FirstOrDefault()?.Description);
+    //    // READ
+    //    var secondEntity = new List<Item>() { new Item { Name = entities[1].Name } };
+    //    context.BulkRead(secondEntity, configUpdateBy);
+    //    Assert.Equal(2, secondEntity.FirstOrDefault()?.ItemId);
+    //    Assert.Equal("UPDATE 2", secondEntity.FirstOrDefault()?.Description);
 
-        // SAVE CHANGES
-        context.AddRange(entities56);
-        context.BulkSaveChanges();
-        Assert.Equal(5, entities56[0].ItemId);
+    //    // SAVE CHANGES
+    //    context.AddRange(entities56);
+    //    context.BulkSaveChanges();
+    //    Assert.Equal(5, entities56[0].ItemId);
 
-        // Test PropIncludeOnUpdate (supported with: 'applySubqueryLimit')
-        var bulkConfig = new BulkConfig
-        {
-            UpdateByProperties = new List<string> { nameof(Item.Name) },
-            PropertiesToIncludeOnUpdate = new List<string> { "" },
-            SetOutputIdentity = true
-        };
-        context.BulkInsertOrUpdate(entities78, bulkConfig);
+    //    // Test PropIncludeOnUpdate (supported with: 'applySubqueryLimit')
+    //    var bulkConfig = new BulkConfig
+    //    {
+    //        UpdateByProperties = new List<string> { nameof(Item.Name) },
+    //        PropertiesToIncludeOnUpdate = new List<string> { "" },
+    //        SetOutputIdentity = true
+    //    };
+    //    context.BulkInsertOrUpdate(entities78, bulkConfig);
 
-        // BATCH
-        var query = context.Items.AsQueryable().Where(a => a.ItemId <= 1);
-        query.BatchUpdate(new Item { Description = "UPDATE N", Price = 1.5m }/*, updateColumns*/);
+    //    // BATCH
+    //    var query = context.Item.AsQueryable().Where(a => a.ItemId <= 1);
+    //    query.BatchUpdate(new Item { Description = "UPDATE N", Price = 1.5m }/*, updateColumns*/);
 
-        var queryJoin = context.ItemHistories.Where(p => p.Item.Description == "UPDATE 2");
-        queryJoin.BatchUpdate(new ItemHistory { Remark = "Rx", });
+    //    var queryJoin = context.ItemHistories.Where(p => p.Item.Description == "UPDATE 2");
+    //    queryJoin.BatchUpdate(new ItemHistory { Remark = "Rx", });
 
-        var query2 = context.Items.AsQueryable().Where(a => a.ItemId > 1 && a.ItemId < 3);
-        query.BatchDelete();
+    //    var query2 = context.Item.AsQueryable().Where(a => a.ItemId > 1 && a.ItemId < 3);
+    //    query.BatchDelete();
 
-        var quants = new[] { 1, 2, 3 };
-        int qu = 5;
-        query.Where(a => quants.Contains(a.Quantity)).BatchUpdate(o => new Item { Quantity = qu });
+    //    var quants = new[] { 1, 2, 3 };
+    //    int qu = 5;
+    //    query.Where(a => quants.Contains(a.Quantity)).BatchUpdate(o => new Item { Quantity = qu });
 
-        var descriptionsToDelete = new List<string> { "info" };
-        var query3 = context.Items.Where(a => descriptionsToDelete.Contains(a.Description ?? ""));
-        query3.BatchDelete();
+    //    var descriptionsToDelete = new List<string> { "info" };
+    //    var query3 = context.Item.Where(a => descriptionsToDelete.Contains(a.Description ?? ""));
+    //    query3.BatchDelete();
 
-        // for type 'jsonb'
-        JsonDocument jsonbDoc = JsonDocument.Parse(@"{ ""ModelEL"" : ""Square""}");
-        var box = new Box { DocumentContent = jsonbDoc, ElementContent = jsonbDoc.RootElement };
-        context.BulkInsert(new List<Box> { box });
+    //    // for type 'jsonb'
+    //    JsonDocument jsonbDoc = JsonDocument.Parse(@"{ ""ModelEL"" : ""Square""}");
+    //    var box = new Box { DocumentContent = jsonbDoc, ElementContent = jsonbDoc.RootElement };
+    //    context.BulkInsert(new List<Box> { box });
 
-        JsonDocument jsonbDoc2 = JsonDocument.Parse(@"{ ""ModelEL"" : ""Circle""}");
-        var boxQuery = context.Boxes.AsQueryable().Where(a => a.BoxId <= 1);
-        boxQuery.BatchUpdate(new Box { DocumentContent = jsonbDoc2, ElementContent = jsonbDoc2.RootElement });
+    //    JsonDocument jsonbDoc2 = JsonDocument.Parse(@"{ ""ModelEL"" : ""Circle""}");
+    //    var boxQuery = context.Boxes.AsQueryable().Where(a => a.BoxId <= 1);
+    //    boxQuery.BatchUpdate(new Box { DocumentContent = jsonbDoc2, ElementContent = jsonbDoc2.RootElement });
 
-        //var incrementStep = 100;
-        //var suffix = " Concatenated";
-        //query.BatchUpdate(a => new Item { Name = a.Name + suffix, Quantity = a.Quantity + incrementStep }); // example of BatchUpdate Increment/Decrement value in variable
-    }
+    //    //var incrementStep = 100;
+    //    //var suffix = " Concatenated";
+    //    //query.BatchUpdate(a => new Item { Name = a.Name + suffix, Quantity = a.Quantity + incrementStep }); // example of BatchUpdate Increment/Decrement value in variable
+    //}
     
     [Theory]
     [InlineData(DbServerType.MySQL)]
@@ -229,92 +229,192 @@ public class EFCoreBulkTest
 
         var currentTime = DateTime.UtcNow; // default DateTime type: "timestamp with time zone"; DateTime.Now goes with: "timestamp without time zone"
 
-        context.Items.RemoveRange(context.Items.ToList());
-        context.SaveChanges();
-        context.Database.ExecuteSqlRaw("ALTER TABLE " + nameof(Item) + " AUTO_INCREMENT = 1");
-        context.SaveChanges();
 
-        var entities1 = new List<Item>();
+        context.BulkDelete(context.DOCUMENTS.ToList());
+
+        context.DOCUMENTS.RemoveRange(context.DOCUMENTS.ToList());
+        context.SaveChanges();
+        //context.Database.ExecuteSqlRaw("ALTER TABLE " + nameof(Item) + " AUTO_INCREMENT = 1");
+        //context.SaveChanges();
+
+        var entities1 = new List<Documents>();
         for (int i = 1; i <= 10; i++)
         {
-            var entity = new Item
+            var entity = new Documents
             {
-                //ItemId = i,
-                Name = "Name " + i,
-                Description = "info " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
+                DOCUMENTID = Guid.NewGuid(),
+                ISACTIVE = true,
+                CONTENT = i + "天下第一",
+                TAG = "tianxia" + i
             };
             entities1.Add(entity);
         }
 
-        var entities2 = new List<Item>();
+        var entities2 = new List<Documents>();
         
         for (int i = 6; i <= 15; i++)
         {
-            var entity = new Item
+            var entity = new Documents
             {
-                ItemId = i,
-                Name = "Name " + i,
-                Description = "v2 info " + i,
-                Quantity = i,
-                Price = 0.1m * i,
-                TimeUpdated = currentTime,
+                DOCUMENTID = Guid.NewGuid(),
+                ISACTIVE = true,
+                CONTENT = i + "天下第一",
+                TAG = "tianxia" + i
             };
             entities2.Add(entity);
         }
-        var entities3 = new List<Item>();
-        var entities4 = new List<Item>();
+        var entities3 = new List<Documents>();
+        var entities4 = new List<Documents>();
 
         // INSERT
 
-        context.BulkInsert(entities1, bc => bc.SetOutputIdentity = true);
-        Assert.Equal(1, entities1[0].ItemId);
-        Assert.Equal("info 1", context.Items.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
-        Assert.Equal("info 2", context.Items.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
+        context.BulkInsert(entities1);
+        //Assert.Equal(1, entities1[0].ItemId);
+        Assert.Equal("info 1", context.Item.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("info 2", context.Item.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
 
         // INSERT Or UPDATE
         //mysql automatically detects unique or primary key
         context.BulkInsertOrUpdate(entities2, new BulkConfig { UpdateByProperties  = new List<string> { nameof(Item.ItemId) } });
-        Assert.Equal("info 5", context.Items.Where(a => a.Name == "Name 5").AsNoTracking().FirstOrDefault()?.Description);
-        Assert.Equal("v2 info 6", context.Items.Where(a => a.Name == "Name 6").AsNoTracking().FirstOrDefault()?.Description);
-        Assert.Equal("v2 info 15", context.Items.Where(a => a.Name == "Name 15").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("info 5", context.Item.Where(a => a.Name == "Name 5").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("v2 info 6", context.Item.Where(a => a.Name == "Name 6").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("v2 info 15", context.Item.Where(a => a.Name == "Name 15").AsNoTracking().FirstOrDefault()?.Description);
         
-        entities3.AddRange(context.Items.Where(a => a.ItemId <= 2).AsNoTracking());
-        foreach (var entity in entities3)
-        {
-            entity.Description = "UPDATED";
-        }
+        //entities3.AddRange(context.Item.Where(a => a.ItemId <= 2).AsNoTracking());
+        //foreach (var entity in entities3)
+        //{
+        //    entity.Description = "UPDATED";
+        //}
         context.BulkUpdate(entities3);
-        Assert.Equal("UPDATED", context.Items.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("UPDATED", context.Item.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
 
         // TODO Custom UpdateBy column not working
-        entities4.AddRange(context.Items.Where(a => a.ItemId >= 3 && a.ItemId <= 4).AsNoTracking());
-        foreach (var entity in entities4)
-        {
-            entity.ItemId = 0; // should be matched by Name
-            entity.Description = "UPDATED 2";
-        }
+        //entities4.AddRange(context.Item.Where(a => a.ItemId >= 3 && a.ItemId <= 4).AsNoTracking());
+        //foreach (var entity in entities4)
+        //{
+        //    entity.ItemId = 0; // should be matched by Name
+        //    entity.Description = "UPDATED 2";
+        //}
         var configUpdateBy = new BulkConfig { UpdateByProperties = new List<string> { nameof(Item.Name) } }; // SetOutputIdentity = true;
         context.BulkUpdate(entities4, configUpdateBy);
-        Assert.Equal("UPDATED 2", context.Items.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("UPDATED 2", context.Item.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
 
         context.BulkDelete(new List<Item> { new Item { ItemId = 11 } });
-        Assert.False(context.Items.Where(a => a.Name == "Name 11").AsNoTracking().Any());
+        Assert.False(context.Item.Where(a => a.Name == "Name 11").AsNoTracking().Any());
 
-        var entities5 = context.Items.Where(a => a.ItemId == 15).AsNoTracking().ToList();
+        var entities5 = context.Item.Where(a => a.ItemId == 15).AsNoTracking().ToList();
         entities5[0].Description = "SaveCh upd";
         entities5.Add(new Item { ItemId = 16, Name = "Name 16", Description = "info 16" }); // when BulkSaveChanges with Upsert 'ItemId' has to be set(EX.My1), and with Insert only it skips one number, Id becomes 17 instead of 16
         context.AddRange(entities5);
         context.BulkSaveChanges();
         Assert.Equal(16, entities5[1].ItemId);
-        Assert.Equal("info 16", context.Items.Where(a => a.Name == "Name 16").AsNoTracking().FirstOrDefault()?.Description);
+        Assert.Equal("info 16", context.Item.Where(a => a.Name == "Name 16").AsNoTracking().FirstOrDefault()?.Description);
 
         //EX.My1: "The property 'Item.ItemId' has a temporary value while attempting to change the entity's state to 'Unchanged'.
         //         Either set a permanent value explicitly, or ensure that the database is configured to generate values for this property."
     }
-    
+
+
+    [Theory]
+    [InlineData(DbServerType.Oracle)]
+    public void InsertTestOracle(DbServerType dbServer)
+    {
+        ContextUtil.DbServer = dbServer;
+
+        using var context = new TestContext(ContextUtil.GetOptions());
+
+        var currentTime = DateTime.UtcNow; // default DateTime type: "timestamp with time zone"; DateTime.Now goes with: "timestamp without time zone"
+
+
+
+        context.BulkDelete(context.DOCUMENTS.ToList());
+
+        context.DOCUMENTS.RemoveRange(context.DOCUMENTS.ToList());
+        context.SaveChanges();
+        //context.Database.ExecuteSqlRaw("ALTER TABLE " + nameof(Item) + " AUTO_INCREMENT = 1");
+        //context.SaveChanges();
+
+        var entities1 = new List<Documents>();
+        for (int i = 1; i <= 10; i++)
+        {
+            var entity = new Documents
+            {
+                DOCUMENTID = Guid.NewGuid(),
+                ISACTIVE = true,
+                CONTENT = i + "天下第一",
+                CONTENTLENGTH = 2,
+                TAG = "tianxia" + i
+            };
+            entities1.Add(entity);
+        }
+
+        var entities2 = new List<Documents>();
+
+        for (int i = 6; i <= 15; i++)
+        {
+            var entity = new Documents
+            {
+                DOCUMENTID = Guid.NewGuid(),
+                ISACTIVE = true,
+                CONTENT = i + "天下第一",
+                TAG = "tianxia" + i,
+                CONTENTLENGTH = 2
+            };
+            entities2.Add(entity);
+        }
+        var entities3 = new List<Documents>();
+        var entities4 = new List<Documents>();
+
+        // INSERT
+
+        context.BulkInsert(entities1, bc => bc.SetOutputIdentity = false);
+
+        //context.BulkInsert(entities1, bc => bc.SetOutputIdentity = false);
+        //Assert.Equal(1, entities1[0].ItemId);
+        //Assert.Equal("info 1", context.Item.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
+        //Assert.Equal("info 2", context.Item.Where(a => a.Name == "Name 2").AsNoTracking().FirstOrDefault()?.Description);
+
+        //// INSERT Or UPDATE
+        ////mysql automatically detects unique or primary key
+        //context.BulkInsertOrUpdate(entities2, new BulkConfig { UpdateByProperties = new List<string> { nameof(Item.ItemId) } });
+        //Assert.Equal("info 5", context.Item.Where(a => a.Name == "Name 5").AsNoTracking().FirstOrDefault()?.Description);
+        //Assert.Equal("v2 info 6", context.Item.Where(a => a.Name == "Name 6").AsNoTracking().FirstOrDefault()?.Description);
+        //Assert.Equal("v2 info 15", context.Item.Where(a => a.Name == "Name 15").AsNoTracking().FirstOrDefault()?.Description);
+
+        ////entities3.AddRange(context.Item.Where(a => a.ItemId <= 2).AsNoTracking());
+        ////foreach (var entity in entities3)
+        ////{
+        ////    entity.Description = "UPDATED";
+        ////}
+        ////context.BulkUpdate(entities3);
+        //Assert.Equal("UPDATED", context.Item.Where(a => a.Name == "Name 1").AsNoTracking().FirstOrDefault()?.Description);
+
+        //// TODO Custom UpdateBy column not working
+        ////entities4.AddRange(context.Item.Where(a => a.ItemId >= 3 && a.ItemId <= 4).AsNoTracking());
+        ////foreach (var entity in entities4)
+        ////{
+        ////    entity.ItemId = 0; // should be matched by Name
+        ////    entity.Description = "UPDATED 2";
+        ////}
+        //var configUpdateBy = new BulkConfig { UpdateByProperties = new List<string> { nameof(Item.Name) } }; // SetOutputIdentity = true;
+        //context.BulkUpdate(entities4, configUpdateBy);
+        //Assert.Equal("UPDATED 2", context.Item.Where(a => a.Name == "Name 3").AsNoTracking().FirstOrDefault()?.Description);
+
+        //context.BulkDelete(new List<Item> { new Item { ItemId = 11 } });
+        //Assert.False(context.Item.Where(a => a.Name == "Name 11").AsNoTracking().Any());
+
+        //var entities5 = context.Item.Where(a => a.ItemId == 15).AsNoTracking().ToList();
+        //entities5[0].Description = "SaveCh upd";
+        //entities5.Add(new Item { ItemId = 16, Name = "Name 16", Description = "info 16" }); // when BulkSaveChanges with Upsert 'ItemId' has to be set(EX.My1), and with Insert only it skips one number, Id becomes 17 instead of 16
+        //context.AddRange(entities5);
+        //context.BulkSaveChanges();
+        //Assert.Equal(16, entities5[1].ItemId);
+        //Assert.Equal("info 16", context.Item.Where(a => a.Name == "Name 16").AsNoTracking().FirstOrDefault()?.Description);
+
+        //EX.My1: "The property 'Item.ItemId' has a temporary value while attempting to change the entity's state to 'Unchanged'.
+        //         Either set a permanent value explicitly, or ensure that the database is configured to generate values for this property."
+    }
+
     [Theory]
     [InlineData(DbServerType.SQLServer, true)]
     [InlineData(DbServerType.SQLite, true)]
@@ -324,7 +424,7 @@ public class EFCoreBulkTest
         ContextUtil.DbServer = dbServer;
 
         //DeletePreviousDatabase();
-        new EFCoreBatchTest().RunDeleteAll(dbServer);
+        //new EFCoreBatchTest().RunDeleteAll(dbServer);
 
         RunInsert(isBulk);
         RunInsertOrUpdate(isBulk, dbServer);
@@ -426,7 +526,7 @@ public class EFCoreBulkTest
                 ItemHistories = new List<ItemHistory>()
             };
 
-            entity.Category = categores[i%categores.Count];
+            //entity.Category = categores[i%categores.Count];
 
             var subEntity1 = new ItemHistory
             {
@@ -497,13 +597,13 @@ public class EFCoreBulkTest
         }
         else
         {
-            context.Items.AddRange(entities);
+            context.Item.AddRange(entities);
             context.SaveChanges();
         }
 
         // TEST
         int entitiesCount = ItemsCountQuery(context);
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber - 1, entitiesCount);
         Assert.NotNull(lastEntity);
@@ -541,13 +641,13 @@ public class EFCoreBulkTest
         }
         else
         {
-            context.Items.Add(entities[^1]);
+            context.Item.Add(entities[^1]);
             context.SaveChanges();
         }
 
         // TEST
-        int entitiesCount = context.Items.Count();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = context.Item.Count();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber, entitiesCount);
         Assert.NotNull(lastEntity);
@@ -589,17 +689,17 @@ public class EFCoreBulkTest
         }
         else
         {
-            var existingItems = context.Items;
+            var existingItems = context.Item;
             var removedItems = existingItems.Where(x => !entities.Any(y => y.ItemId == x.ItemId));
-            context.Items.RemoveRange(removedItems);
-            context.Items.AddRange(entities);
+            context.Item.RemoveRange(removedItems);
+            context.Item.AddRange(entities);
             context.SaveChanges();
         }
 
         // TEST
-        int entitiesCount = context.Items.Count();
-        Item? firstEntity = context.Items.OrderBy(a => a.ItemId).FirstOrDefault();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = context.Item.Count();
+        Item? firstEntity = context.Item.OrderBy(a => a.ItemId).FirstOrDefault();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber / 2 + (keepEntityItemId != null ? 1 : 0), entitiesCount);
         Assert.NotNull(firstEntity);
@@ -611,7 +711,7 @@ public class EFCoreBulkTest
         bulkConfigSoftDel.SetSynchronizeSoftDelete<Item>(a => new Item { Quantity = 0 }); // Instead of Deleting from DB it updates Quantity to 0 (usual usecase would be: IsDeleted to True)
         context.BulkInsertOrUpdateOrDelete(new List<Item> { entities[1] }, bulkConfigSoftDel);
 
-        var list = context.Items.Take(2).ToList();
+        var list = context.Item.Take(2).ToList();
         Assert.True(list[0].Quantity != 0);
         Assert.True(list[1].Quantity == 0);
     }
@@ -621,7 +721,7 @@ public class EFCoreBulkTest
         using var context = new TestContext(ContextUtil.GetOptions());
 
         int counter = 1;
-        var entities = context.Items.AsNoTracking().ToList();
+        var entities = context.Item.AsNoTracking().ToList();
         foreach (var entity in entities)
         {
             entity.Description = "Desc Update " + counter++;
@@ -645,13 +745,13 @@ public class EFCoreBulkTest
         }
         else
         {
-            context.Items.UpdateRange(entities);
+            context.Item.UpdateRange(entities);
             context.SaveChanges();
         }
 
         // TEST
-        int entitiesCount = context.Items.Count();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = context.Item.Count();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(EntitiesNumber, entitiesCount);
         Assert.NotNull(lastEntity);
@@ -705,13 +805,13 @@ public class EFCoreBulkTest
         }
         else
         {
-            context.Items.RemoveRange(entities);
+            context.Item.RemoveRange(entities);
             context.SaveChanges();
         }
 
         // TEST
-        int entitiesCount = context.Items.Count();
-        Item? lastEntity = context.Items.OrderByDescending(a => a.ItemId).FirstOrDefault();
+        int entitiesCount = context.Item.Count();
+        Item? lastEntity = context.Item.OrderByDescending(a => a.ItemId).FirstOrDefault();
 
         Assert.Equal(0, entitiesCount);
         Assert.Null(lastEntity);

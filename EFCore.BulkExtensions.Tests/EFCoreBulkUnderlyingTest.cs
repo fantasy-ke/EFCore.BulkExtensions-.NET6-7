@@ -14,9 +14,9 @@ public class EFCoreBulkUnderlyingTest
 {
     protected static int EntitiesNumber => 1000;
 
-    private static readonly Func<TestContext, int> ItemsCountQuery = EF.CompileQuery<TestContext, int>(ctx => ctx.Items.Select(i => i.ItemId).Count());
-    private static readonly Func<TestContext, Item?> LastItemQuery = EF.CompileQuery<TestContext, Item?>(ctx => ctx.Items.OrderBy(i => i.ItemId).LastOrDefault());
-    private static readonly Func<TestContext, IEnumerable<Item>> AllItemsQuery = EF.CompileQuery<TestContext, IEnumerable<Item>>(ctx => ctx.Items.AsNoTracking());
+    private static readonly Func<TestContext, int> ItemsCountQuery = EF.CompileQuery<TestContext, int>(ctx => ctx.Item.Select(i => i.ItemId).Count());
+    private static readonly Func<TestContext, Item?> LastItemQuery = EF.CompileQuery<TestContext, Item?>(ctx => ctx.Item.OrderBy(i => i.ItemId).LastOrDefault());
+    private static readonly Func<TestContext, IEnumerable<Item>> AllItemsQuery = EF.CompileQuery<TestContext, IEnumerable<Item>>(ctx => ctx.Item.AsNoTracking());
 
     [Theory]
     [InlineData(true)]
@@ -108,7 +108,7 @@ public class EFCoreBulkUnderlyingTest
         }
         else
         {
-            context.Items.AddRange(entities);
+            context.Item.AddRange(entities);
             context.SaveChanges();
         }
 
@@ -136,7 +136,7 @@ public class EFCoreBulkUnderlyingTest
         }
         else
         {
-            context.Items.RemoveRange(entities);
+            context.Item.RemoveRange(entities);
             context.SaveChanges();
         }
 

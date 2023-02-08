@@ -32,6 +32,12 @@ public enum DbServerType
     /// </summary>
     [Description("MySql")]
     MySQL,
+
+    /// <summary>
+    /// Indicates database is MySQL
+    /// </summary>
+    [Description("Oracle")]
+    Oracle
 }
 
 #pragma warning disable CS1591 // No XML comment required here
@@ -64,6 +70,10 @@ public static class SqlAdaptersMapping
             {
                 serverType = DbServerType.SQLite;
             }
+            else if (ProviderName?.ToLower().StartsWith(DbServerType.Oracle.ToString().ToLower()) ?? false)
+            {
+                serverType = DbServerType.Oracle;
+            }
 
             if (_dbServer == null || _dbServer.Type != serverType)
             {
@@ -85,6 +95,10 @@ public static class SqlAdaptersMapping
                 else if (serverType == DbServerType.SQLite)
                 {
                     dbServerType = Type.GetType(EFCoreBulkExtensionsSqlAdaptersTEXT + ".SQLite.SqlLiteDbServer");
+                }
+                else if (serverType == DbServerType.Oracle)
+                {
+                    dbServerType = Type.GetType(EFCoreBulkExtensionsSqlAdaptersTEXT + ".Oracle.OracleDbServer");
                 }
 
                 var dbServerInstance = Activator.CreateInstance(dbServerType ?? typeof(int));

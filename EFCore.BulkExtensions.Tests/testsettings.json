@@ -1,8 +1,10 @@
 {
   "ConnectionStrings": {
     "SqlServer": "Server=localhost;Database={databaseName};Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;",
-    "Sqlite": "Data Source={databaseName}.db",
-    "PostgreSql": "Server=localhost;Port=5432;Database={databaseName};User Id=postgres;Password=Postgres22;",
-    "MySql": "Server=localhost;Database={databaseName};Uid=root;Pwd=MySQL22;AllowLoadLocalInfile=true;"
+    //"Sqlite": "Data Source={databaseName}.db",
+    //"PostgreSql": "Server=localhost;Port=5432;Database={databaseName};User Id=postgres;Password=Postgres22;",
+    "Oracle": "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.2.41)(PORT=1521))(CONNECT_DATA=(SERVER = DEDICATED)(SERVICE_NAME= helowin)));User Id=ZK;Password=123456",
+
+    "MySql": "Server=192.168.2.41;Port=3307;Database=mysql;Uid=root;Pwd=123456;charset=utf8;AllowLoadLocalInfile=true;TreatTinyAsBoolean=false;"
   }
 }
