@@ -127,6 +127,9 @@ public class TableInfo
     }
 
     #region Main
+
+
+
     /// <summary>
     /// Configures the table info based on entity data 
     /// </summary>
@@ -160,6 +163,7 @@ public class TableInfo
         bool isNpgsql = providerName?.EndsWith(DbServerType.PostgreSQL.ToString().ToLower()) ?? false;
         bool isSqlite = providerName?.EndsWith(DbServerType.SQLite.ToString().ToLower()) ?? false;
         bool isMySql = providerName?.EndsWith(DbServerType.MySQL.ToString().ToLower()) ?? false;
+        bool isOracle = providerName?.StartsWith(DbServerType.Oracle.ToString().ToLower()) ?? false;
 
         string? defaultSchema = isSqlServer ? "dbo" : null;
 
@@ -210,10 +214,12 @@ public class TableInfo
 
         ObjectIdentifier = StoreObjectIdentifier.Table(entityTableName, entityType.GetSchema());
 
+
         var allProperties = new List<IProperty>();
         foreach (var entityProperty in entityType.GetProperties())
         {
             var columnName = entityProperty.GetColumnName(ObjectIdentifier);
+
             bool isTemporalColumn = columnName is not null
                 && entityProperty.IsShadowProperty()
                 && entityProperty.ClrType == typeof(DateTime)
@@ -270,7 +276,7 @@ public class TableInfo
         HasOwnedTypes = ownedTypes.Any();
         OwnedTypesDict = ownedTypes.ToDictionary(a => a.Name, a => a);
 
-        if (isSqlServer || isNpgsql || isMySql)
+        if (isSqlServer || isNpgsql || isMySql || isOracle)
         {
             var strategyName = SqlAdaptersMapping.DbServer!.ValueGenerationStrategy;
             if (!strategyName.Contains(":Value"))
@@ -851,9 +857,9 @@ public class TableInfo
                     }
                     else
                     {
-                       //TODO: Shadow FK property update
+                        //TODO: Shadow FK property update
                     }
-                    
+
                 }
             }
         }

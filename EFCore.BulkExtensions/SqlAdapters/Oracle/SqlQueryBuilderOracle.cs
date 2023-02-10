@@ -100,12 +100,24 @@ public class SqlQueryBuilderOracle : QueryBuilderExtensions
     /// <exception cref="NotImplementedException"></exception>
     public static string MergeTable<T>(TableInfo tableInfo, OperationType operationType) where T : class
     {
-        var columnsList = GetColumnList(tableInfo, operationType);
+        List<string> columnsNames = tableInfo.PropertyColumnNamesDict.Values.ToList();
+        List<string> nonIdentityColumnsNames = columnsNames.Where(a => !a.Equals(tableInfo.IdentityColumnName, StringComparison.OrdinalIgnoreCase)).ToList();
+        List<string> columnsNamesOnUpdate = tableInfo.PropertyColumnNamesUpdateDict.Values.ToList();
+        List<string> columnsNamesOnCompare = tableInfo.PropertyColumnNamesCompareDict.Values.ToList();
+        List<string> primaryKeys = tableInfo.PrimaryKeysPropertyColumnNameDict.Where(a => tableInfo.PropertyColumnNamesDict.ContainsKey(a.Key)).Select(a => a.Value).ToList();
+        List<string> updateColumnNames = columnsNamesOnUpdate.Where(a => !a.Equals(tableInfo.IdentityColumnName, StringComparison.OrdinalIgnoreCase)).ToList();
+        List<string> compareColumnNames = columnsNamesOnCompare.Where(a => !a.Equals(tableInfo.IdentityColumnName, StringComparison.OrdinalIgnoreCase)).ToList();
+        List<string> insertColumnsNames = nonIdentityColumnsNames;
+        List<string> outputColumnsNames = tableInfo.OutputPropertyColumnNamesDict.Values.ToList();
+        string targetTable = tableInfo.FullTableName;
+        string sourceTable = tableInfo.FullTempTableName;
         if (operationType == OperationType.InsertOrUpdateOrDelete)
         {
             throw new NotImplementedException($"For Oracle method {OperationType.InsertOrUpdateOrDelete} is not yet supported. Use combination of InsertOrUpdate with Read and Delete");
         }
-
+        string isUpdateStatsValue = (tableInfo.BulkConfig.CalculateStats)
+            ? ",(CASE $action WHEN 'UPDATE' THEN 1 Else 0 END),(CASE $action WHEN 'DELETE' THEN 1 Else 0 END)"
+            : string.Empty;
         string query;
         var firstPrimaryKey = tableInfo.PrimaryKeysPropertyColumnNameDict.FirstOrDefault().Key;
         if (operationType == OperationType.Delete)
@@ -115,40 +127,39 @@ public class SqlQueryBuilderOracle : QueryBuilderExtensions
         }
         else
         {
-            var commaSeparatedColumns = SqlQueryBuilder.GetCommaSeparatedColumns(columnsList).Replace("[", "").Replace("]", "");
-            var columnsListEquals = GetColumnList(tableInfo, OperationType.Insert);
-            var columnsToUpdate = columnsListEquals.Where(c => tableInfo.PropertyColumnNamesUpdateDict.ContainsValue(c)).ToList();
-            var equalsColumns = SqlQueryBuilder.GetCommaSeparatedColumns(columnsToUpdate, equalsTable: "EXCLUDED").Replace("[", "").Replace("]", "");
+            query = $"MERGE INTO {targetTable} T " +
+                $"USING {sourceTable} S " +
+                $"ON ({GetANDSeparatedColumns(primaryKeys, "T", "S", tableInfo.UpdateByPropertiesAreNullable)})";
+            query += (primaryKeys.Count == 0) ? "1=0" : string.Empty;
 
-            query = $"INSERT INTO {tableInfo.FullTableName} ({commaSeparatedColumns}) " +
-                    $"SELECT {commaSeparatedColumns} FROM {tableInfo.FullTempTableName} AS EXCLUDED " +
-                    "ON DUPLICATE KEY UPDATE " +
-                    $"{equalsColumns}; ";
-            if (tableInfo.CreatedOutputTable)
+            if (operationType == OperationType.Insert || operationType == OperationType.InsertOrUpdate)
             {
-                if (operationType == OperationType.Insert || operationType == OperationType.InsertOrUpdate)
-                {
-                    query += $"INSERT INTO {tableInfo.FullTempOutputTableName} " +
-                             $"SELECT * FROM {tableInfo.FullTableName} " +
-                             $"WHERE {firstPrimaryKey} >= LAST_INSERT_ID() " +
-                             $"AND {firstPrimaryKey} < LAST_INSERT_ID() + row_count(); ";
-                }
+                query += $" WHEN NOT MATCHED " +
+                     $"THEN INSERT ({GetCommaSeparatedColumns(insertColumnsNames)})" +
+                     $" VALUES ({GetCommaSeparatedColumns(insertColumnsNames, "S")})";
+            }
 
-                if (operationType == OperationType.Update)
+            if (operationType == OperationType.Update || operationType == OperationType.InsertOrUpdate)
+            {
+                if (updateColumnNames.Count == 0 && operationType == OperationType.Update)
                 {
-                    query += $"INSERT INTO {tableInfo.FullTempOutputTableName} " +
-                             $"SELECT * FROM {tableInfo.FullTempTableName} ";
+                    throw new InvalidBulkConfigException($"'Bulk{operationType}' operation can not have zero columns to update.");
                 }
-
-                if (operationType == OperationType.InsertOrUpdate)
+                else if (updateColumnNames.Count > 0)
                 {
-                    query += $"INSERT INTO {tableInfo.FullTempOutputTableName} " +
-                             $"SELECT A.* FROM {tableInfo.FullTempTableName} A " +
-                             $"LEFT OUTER JOIN {tableInfo.FullTempOutputTableName} B " +
-                             $" ON A.{firstPrimaryKey} = B.{firstPrimaryKey} " +
-                             $"WHERE  B.{firstPrimaryKey} IS NULL; ";
+                    query += $" WHEN MATCHED " +
+                        $" THEN UPDATE SET {GetCommaSeparatedColumns(updateColumnNames, "T", "S")}";
                 }
             }
+
+            query = query.Replace("INSERT () VALUES ()", "INSERT DEFAULT VALUES");
+            if (tableInfo.CreatedOutputTable)
+            {
+                string commaSeparatedColumnsNames= GetCommaSeparatedColumns(outputColumnsNames, "INSERTED");
+                query += $" OUTPUT {commaSeparatedColumnsNames}" + isUpdateStatsValue +
+                     $" INTO {tableInfo.FullTempOutputTableName}";
+            }
+            query += ";";
         }
 
         query = query.Replace("[", "").Replace("]", "");
